@@ -16,10 +16,6 @@ export default function HomePage() {
         <Navbar onLoginClick={() => setMostrarModal(true)} />
       </header>
 
-      <header className={styles.headerFilters}>
-        <FiltersBar />
-      </header>
-
       <main className={styles.body}>
         <div className={styles.scrollContent}>
           <p>Contenido principal del usuario (tarjetas, información, etc.).</p>
