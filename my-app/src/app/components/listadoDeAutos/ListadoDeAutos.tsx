@@ -121,6 +121,7 @@ const ListadoDeAutos: React.FC<ListadoDeAutosProps> = ({ activeFilter, autos = [
       
       // Esperar una respuesta exitosa
       const data = await response.json();
+      console.log(data);
       
       // Cambiar el modal a variante de éxito
       setModalConfig({
@@ -169,6 +170,7 @@ const ListadoDeAutos: React.FC<ListadoDeAutosProps> = ({ activeFilter, autos = [
       
       // Esperar una respuesta exitosa
       const data = await response.json();
+      console.log(data);
       
       // Cambiar el modal a variante de éxito
       setModalConfig({
