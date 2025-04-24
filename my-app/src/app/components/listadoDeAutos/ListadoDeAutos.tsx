@@ -238,7 +238,7 @@ const ListadoDeAutos: React.FC<ListadoDeAutosProps> = ({ activeFilter, autos = [
           </div>
         ) : (
           autosFiltrados.map(auto => (
-            <div key={auto.id} className={styles.carContainer}>
+            <div key={auto.idAuto} className={styles.carContainer}>
               <img 
                 src={'https://cdn.motor1.com/images/mgl/6ZzvLZ/s1/2024-audi-rs7-performance-review.jpg'} 
                 alt={auto.nombre} 
