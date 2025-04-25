@@ -48,7 +48,7 @@ export default function PagarRenta() {
           throw new Error('ID de reserva no encontrado');
         }
         
-        const response = await fetch(`${API_URL}/api/reservas/${idReserva}/detalles`);
+        const response = await fetch(`${API_URL}/reservas/${idReserva}/detalles`);
         
         if (!response.ok) {
           // Intenta obtener el mensaje de error del cuerpo de la respuesta
