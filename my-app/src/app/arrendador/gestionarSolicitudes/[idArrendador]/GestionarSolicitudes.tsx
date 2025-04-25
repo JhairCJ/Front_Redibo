@@ -53,7 +53,7 @@ export default function GestionarSolicitudes() {
         }
         
         // Realizar la petición al backend
-        const response = await fetch(`${API_URL}/api/reservas/propietario/${idArrendador}`);
+        const response = await fetch(`https://backredibo-production.up.railway.app/api/reservas/propietario/${idArrendador}`);
         
         if (!response.ok) {
           throw new Error(`Error al obtener datos: ${response.status}`);
