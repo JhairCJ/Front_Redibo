@@ -12,6 +12,7 @@ import PropietarioAuto from '@components/auto/PropietarioAuto';
 import DescripcionAuto from '@components/auto/DescripcionAuto';
 import CaracteristicasAuto from '@components/auto/CaracteristicasAuto';
 import PrecioAuto from '@components/auto/PrecioAuto';
+import { API_URL } from '@config/api';
 
 export default function PagarRenta() {
   const params = useParams();
@@ -47,7 +48,7 @@ export default function PagarRenta() {
           throw new Error('ID de reserva no encontrado');
         }
         
-        const response = await fetch(`http://localhost:3000/api/reservas/${idReserva}/detalles`);
+        const response = await fetch(`${API_URL}/api/reservas/${idReserva}/detalles`);
         
         if (!response.ok) {
           // Intenta obtener el mensaje de error del cuerpo de la respuesta

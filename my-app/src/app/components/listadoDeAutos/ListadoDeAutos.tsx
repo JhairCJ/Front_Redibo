@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styles from './ListadoDeAutos.module.css';
 import ModalDeConfirmacion from '@components/modal/ModalDeConfirmacion';
 import { useRouter } from 'next/navigation';
+import { API_URL } from '@config/api';
 
 // Interfaces para las solicitudes y autos
 interface SolicitudPendiente {
@@ -108,7 +109,7 @@ const ListadoDeAutos: React.FC<ListadoDeAutosProps> = ({ activeFilter, autos = [
       // Actualizar el estado del modal para mostrar que está procesando
       setModalConfig(prev => ({ ...prev, isProcessing: true }));
       // Realizar la petición a la API para aceptar la solicitud
-      const response = await fetch(`http://localhost:3000/api/reservas/${solicitudId}/aceptar`, {
+      const response = await fetch(`${API_URL}/api/reservas/${solicitudId}/aceptar`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -157,7 +158,7 @@ const ListadoDeAutos: React.FC<ListadoDeAutosProps> = ({ activeFilter, autos = [
       setModalConfig(prev => ({ ...prev, isProcessing: true }));
       console.log(solicitudId);
       // Realizar la petición a la API para denegar la solicitud
-      const response = await fetch(`http://localhost:3000/api/reservas/${solicitudId}/denegar`, {
+      const response = await fetch(`${API_URL}/api/reservas/${solicitudId}/denegar`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
