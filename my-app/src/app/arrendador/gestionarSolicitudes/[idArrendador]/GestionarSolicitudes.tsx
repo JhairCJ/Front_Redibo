@@ -7,8 +7,6 @@ import ListadoDeAutos from "@components/listadoDeAutos/ListadoDeAutos";
 import Navbar from "@components/navbar/Navbar";
 import LoginModal from "@components/auth/LoginModal";
 import styles from "./GestionarSolicitudes.module.css";
-import { API_URL } from '@config/api';
-
 interface SolicitudPendiente {
   idReserva: string;
   nombreSolicitante: string;
