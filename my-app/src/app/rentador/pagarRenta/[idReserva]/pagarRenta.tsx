@@ -31,7 +31,7 @@ export default function PagarRenta() {
     caracteristicas: { nombre: string; activo: boolean }[];
     precio: number;
     reserva: {fechaInicio: string; fechaFin: string; dias: number};
-    costes: { precio: number; dias: number; tarifa: number; garantia: number; total: number };
+    costes: { precio: number; dias: number; garantia: number; total: number };
   }
 
   const [carData, setCarData] = useState<CarData | null>(null);

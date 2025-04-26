@@ -15,7 +15,6 @@ interface PrecioAutoProps {
   costes: {
     precio: number;
     dias: number;
-    tarifa: number;
     garantia: number;
     total: number;
   };
@@ -66,10 +65,6 @@ export default function PrecioAuto({
               ${costes.precio} × {costes.dias} días
             </span>
             <span>${costes.precio * costes.dias}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Tarifa de servicio</span>
-            <span>${costes.tarifa}</span>
           </div>
           <div className="flex justify-between">
             <span>Garantía (reembolsable)</span>
