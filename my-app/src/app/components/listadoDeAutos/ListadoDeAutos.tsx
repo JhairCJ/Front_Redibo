@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import styles from './ListadoDeAutos.module.css';
 import ModalDeConfirmacion from '@components/modal/ModalDeConfirmacion';
-import { useRouter } from 'next/navigation';
 import { API_URL } from '@config/api';
 
 // Interfaces para las solicitudes y autos
@@ -28,7 +27,6 @@ interface ListadoDeAutosProps {
 }
 
 const ListadoDeAutos: React.FC<ListadoDeAutosProps> = ({ activeFilter, autos = [] }) => {
-  const router = useRouter();
   // Estados para gestionar el modal
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modalConfig, setModalConfig] = useState({
