@@ -264,33 +264,33 @@ const ListadoDeAutos: React.FC<ListadoDeAutosProps> = ({ activeFilter, autos = [
                 </div>
               </div>
               
-              {auto.solicitudesPendientes && auto.solicitudesPendientes.length > 0 && (
-                <>
-                  <div className={styles.requestsTitle}>Solicitudes de renta</div>
-                  
-                  {auto.solicitudesPendientes.map(solicitud => (
-                    <div key={solicitud.idReserva} className={styles.requestItem}>
-                      <div className={styles.requesterInfo}>
-                        <div className={styles.requesterName}>{solicitud.nombreSolicitante}</div>
-                        <div className={styles.requestDate}>{solicitud.fechas}</div>
-                      </div>
-                      <div className={styles.buttonContainer}>
-                        <button 
-                          className={`${styles.btn} ${styles.btnReject}`}
-                          onClick={() => mostrarModalDenegar(auto.idAuto, solicitud.idReserva, solicitud.nombreSolicitante)}
-                        >
-                          Denegar
-                        </button>
-                        <button 
-                          className={`${styles.btn} ${styles.btnAccept}`}
-                          onClick={() => mostrarModalAceptar(auto.idAuto, solicitud.idReserva, solicitud.nombreSolicitante)}
-                        >
-                          Aceptar
-                        </button>
-                      </div>
+              <div className={styles.requestsTitle}>Solicitudes de renta</div>
+              
+              {(!auto.solicitudesPendientes || auto.solicitudesPendientes.length === 0) ? (
+                <div className={styles.noRequestsMessage}>No hay solicitudes pendientes</div>
+              ) : (
+                auto.solicitudesPendientes.map(solicitud => (
+                  <div key={solicitud.idReserva} className={styles.requestItem}>
+                    <div className={styles.requesterInfo}>
+                      <div className={styles.requesterName}>{solicitud.nombreSolicitante}</div>
+                      <div className={styles.requestDate}>{solicitud.fechas}</div>
                     </div>
-                  ))}
-                </>
+                    <div className={styles.buttonContainer}>
+                      <button 
+                        className={`${styles.btn} ${styles.btnReject}`}
+                        onClick={() => mostrarModalDenegar(auto.idAuto, solicitud.idReserva, solicitud.nombreSolicitante)}
+                      >
+                        Denegar
+                      </button>
+                      <button 
+                        className={`${styles.btn} ${styles.btnAccept}`}
+                        onClick={() => mostrarModalAceptar(auto.idAuto, solicitud.idReserva, solicitud.nombreSolicitante)}
+                      >
+                        Aceptar
+                      </button>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           ))
