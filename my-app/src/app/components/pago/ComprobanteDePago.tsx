@@ -1,9 +1,7 @@
 'use client'
 
-import { useState, useRef,} from 'react'
+import { useState, useRef } from 'react'
 import { FiDownload, FiX } from 'react-icons/fi'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
 
 interface PaymentDetails {
   monto: number;
@@ -37,44 +35,19 @@ export default function ComprobanteDePago({
     return null
   }
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     setIsDownloading(true)
     
     try {
-      // Ocultar los botones temporalmente para la captura
-      if (buttonsRef.current) {
-        buttonsRef.current.style.display = 'none'
-      }
+      // Mensaje temporal mientras se implementa la funcionalidad de descarga
+      console.log('Funcionalidad de descarga temporalmente deshabilitada')
+      alert('La funcionalidad de descarga estará disponible pronto')
       
-      // Capturar el contenido del comprobante
-      if (comprobateRef.current) {
-        const canvas = await html2canvas(comprobateRef.current, {
-          scale: 2, // Mayor calidad
-          backgroundColor: '#ffffff',
-          logging: false
-        })
-        
-        // Crear el PDF con las dimensiones adecuadas
-        const imgData = canvas.toDataURL('image/png')
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4'
-        })
-        
-        const imgWidth = 210 // A4 width en mm
-        const imgHeight = canvas.height * imgWidth / canvas.width
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
-        pdf.save(`Comprobante_${paymentDetails.cliente.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`)
-      }
+      // Aquí iría el código para generar y descargar el PDF
+      // cuando las dependencias estén correctamente instaladas
     } catch (error) {
-      console.error('Error al generar el PDF:', error)
+      console.error('Error:', error)
     } finally {
-      // Restaurar la visibilidad de los botones
-      if (buttonsRef.current) {
-        buttonsRef.current.style.display = 'flex'
-      }
       setIsDownloading(false)
     }
   }
