@@ -36,6 +36,8 @@ export default function PrecioAuto({
     vehiculo: vehiculo,
     fechaInicio: reserva.fechaInicio,
     fechaFin: reserva.fechaFin,
+    garantia: costes.garantia,
+    precio: costes.precio,
     dias: reserva.dias,
     total: costes.total,
     moneda: "Bs",

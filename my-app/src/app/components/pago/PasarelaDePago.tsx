@@ -9,6 +9,8 @@ interface RentaDetails {
   vehiculo: string;
   fechaInicio: string;
   fechaFin: string;
+  garantia: number;
+  precio: number;
   dias: number;
   total: number;
   moneda: string;
@@ -160,10 +162,23 @@ export default function PasarelaDePago({
                     <span>Duración:</span>
                     <span className="font-medium">{rentaDetails.dias} día(s)</span>
                   </div>
+
+                  <div className="flex justify-between py-2 border-b border-gray-200">
+                    <span>Coste de garantia:</span>
+                    <span className="font-medium">{rentaDetails.garantia} Bs</span>
+                  </div>
+
+                  <div className="flex justify-between py-2 border-b border-gray-200">
+                    <span>Precio:</span>
+                    <span>
+                      {rentaDetails.precio} Bs × {rentaDetails.dias} días =
+                    </span>
+                    <span>${rentaDetails.precio * rentaDetails.dias}</span>
+                  </div>
                   
                   <div className="flex justify-between py-2">
                     <span className="font-semibold">Total a pagar ahora:</span>
-                    <span className="font-bold">${rentaDetails.total} {rentaDetails.moneda}</span>
+                    <span className="font-bold">{rentaDetails.total} {rentaDetails.moneda}</span>
                   </div>
                 </div>
               </div>
