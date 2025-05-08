@@ -6,7 +6,7 @@ interface CaracteristicasAutoProps {
   transmision: string;
 }
 
-export default function CaracteristicasAuto({ asientos, transmision, caracteristicas }: CaracteristicasAutoProps) {
+export default function CaracteristicasAuto({ asientos, transmision}: CaracteristicasAutoProps) {
   return (
     <>
       {/* Características principales */}
