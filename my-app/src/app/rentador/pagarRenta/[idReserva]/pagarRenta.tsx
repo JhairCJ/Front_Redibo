@@ -152,7 +152,6 @@ export default function PagarRenta() {
             <CaracteristicasAuto 
               asientos={carData.asientos} 
               transmision={carData.transmision} 
-              caracteristicas={carData.caracteristicas} 
             />
           </div>
           

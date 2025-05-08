@@ -171,9 +171,8 @@ export default function PasarelaDePago({
                   <div className="flex justify-between py-2 border-b border-gray-200">
                     <span>Precio:</span>
                     <span>
-                      {rentaDetails.precio} Bs × {rentaDetails.dias} días =
+                      {rentaDetails.precio} Bs × {rentaDetails.dias} días = {rentaDetails.precio * rentaDetails.dias} Bs
                     </span>
-                    <span>${rentaDetails.precio * rentaDetails.dias}</span>
                   </div>
                   
                   <div className="flex justify-between py-2">
@@ -317,7 +316,7 @@ export default function PasarelaDePago({
         onConfirm={handleFinalizarPago}
         title="Pago realizado con éxito"
         message="Su pago ha sido procesado correctamente. El anfitrión será notificado."
-        confirmText="ACEPTAR"
+        confirmText="Ver Comprobantes de pago y de garantía"
         variant="success"
         showSuccess={true}
         successIcon={<FiCheckCircle className="text-5xl text-[#FFA500]" />}

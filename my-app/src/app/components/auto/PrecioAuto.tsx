@@ -46,7 +46,7 @@ export default function PrecioAuto({
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6 sticky top-4">
       <div className="flex items-center mb-4 text-left">
-        <div className="text-2xl font-bold text-blue-900">${precio}</div>
+        <div className="text-2xl font-bold text-blue-900">{precio} Bs</div>
         <div className="text-sm text-gray-600 ml-1">/por día</div>
       </div>
 
@@ -64,17 +64,17 @@ export default function PrecioAuto({
         <div className="space-y-3">
           <div className="flex justify-between">
             <span>
-              ${costes.precio} × {costes.dias} días
+              {costes.precio} Bs × {costes.dias} días
             </span>
-            <span>${costes.precio * costes.dias}</span>
+            <span>{costes.precio * costes.dias} Bs</span>
           </div>
           <div className="flex justify-between">
             <span>Garantía (reembolsable)</span>
-            <span>${costes.garantia}</span>
+            <span>{costes.garantia} Bs</span>
           </div>
           <div className="flex justify-between font-bold pt-3 border-t border-gray-200">
             <span>Total</span>
-            <span>${costes.total}</span>
+            <span>{costes.total} Bs</span>
           </div>
         </div>
       </div>
