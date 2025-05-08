@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useEffect } from 'react'
-import { FiCheckCircle, FiX } from 'react-icons/fi'
+import { FiCheckCircle, FiX, FiAlertCircle } from 'react-icons/fi'
 import ConfirmationModal from '@components/modal/ModalDeConfirmacion'
 
 interface RentaDetails {
@@ -35,6 +35,7 @@ export default function PasarelaDePago({
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('tarjeta')
   const [isFormValid, setIsFormValid] = useState(false)
+  const [showValidationErrors, setShowValidationErrors] = useState(false)
 
   // Campos del formulario
   const [cardName, setCardName] = useState('')
@@ -42,16 +43,61 @@ export default function PasarelaDePago({
   const [expDate, setExpDate] = useState('')
   const [cvc, setCvc] = useState('')
 
+  // Estados para validación de campos individuales
+  const [isCardNameValid, setIsCardNameValid] = useState(false)
+  const [isCardNumberValid, setIsCardNumberValid] = useState(false)
+  const [isExpDateValid, setIsExpDateValid] = useState(false)
+  const [isCvcValid, setIsCvcValid] = useState(false)
+
+  // Validación más estricta para la fecha de expiración
+  const validateExpDate = (expDate: string) => {
+    // Verificar formato MM/AA
+    if (!/^\d{2}\/\d{2}$/.test(expDate)) return false;
+    
+    const [month, year] = expDate.split('/').map(part => parseInt(part, 10));
+    
+    // Verificar que el mes sea válido (1-12)
+    if (month < 1 || month > 12) return false;
+    
+    // Obtener fecha actual
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() % 100; // Últimos dos dígitos del año
+    const currentMonth = currentDate.getMonth() + 1; // Enero es 0
+    
+    // Verificar que la fecha no sea anterior a la actual
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+      return false;
+    }
+    
+    // Verificar que la fecha no sea demasiado futura (máximo 10 años)
+    const maxYear = currentYear + 10;
+    if (year > maxYear) {
+      return false;
+    }
+    
+    return true;
+  };
+  
   // Validar formulario cada vez que cambien los campos
   useEffect(() => {
-    const isValid = cardName.trim() !== '' && 
-                   cardName.trim().length >= 5 &&
-                   cardName.trim().length <= 30 &&
-                   cardNumber.replace(/\s/g, '').length === 16 &&
-                   /^\d{2}\/\d{2}$/.test(expDate) &&
-                   cvc.length === 3
+    // Validación individual de cada campo
+    const nameValid = cardName.trim() !== '' && 
+                      cardName.trim().length >= 5 &&
+                      cardName.trim().length <= 30
     
-    setIsFormValid(isValid)
+    const numberValid = cardNumber.replace(/\s/g, '').length === 16
+    
+    const expValid = validateExpDate(expDate)
+    
+    const cvcValid = cvc.length === 3
+
+    setIsCardNameValid(nameValid)
+    setIsCardNumberValid(numberValid)
+    setIsExpDateValid(expValid)
+    setIsCvcValid(cvcValid)
+    
+    // Validación general del formulario
+    setIsFormValid(nameValid && numberValid && expValid && cvcValid)
   }, [cardName, cardNumber, expDate, cvc])
 
   // Función para resetear el formulario
@@ -61,6 +107,7 @@ export default function PasarelaDePago({
     setExpDate('')
     setCvc('')
     setIsFormValid(false)
+    setShowValidationErrors(false)
   }
 
   // Handler para cancelar
@@ -98,9 +145,20 @@ export default function PasarelaDePago({
   }
 
   const handleProcesarPago = () => {
-    if (!isFormValid) return
-    onClose()
-    setShowConfirmModal(true)
+    // Si el método de pago es QR, procedemos directamente
+    if (paymentMethod === 'qr') {
+      onClose()
+      setShowConfirmModal(true)
+      return
+    }
+    
+    // Si es pago con tarjeta, validamos el formulario
+    setShowValidationErrors(true)
+    
+    if (isFormValid) {
+      onClose()
+      setShowConfirmModal(true)
+    }
   }
 
   const handleConfirmarPago = async () => {
@@ -121,6 +179,16 @@ export default function PasarelaDePago({
 
   if (!isOpen && !showConfirmModal && !showSuccessModal) {
     return null
+  }
+
+  // Función para generar la clase de input según validación
+  const getInputClass = (isValid: boolean) => {
+    if (!showValidationErrors) return "w-full p-2 border border-gray-300 rounded-lg"
+    return `w-full p-2 border ${
+      isValid ? 'border-gray-300' : 'border-red-500 bg-red-50'
+    } rounded-lg ${
+      !isValid ? 'focus:ring-red-500 focus:border-red-500' : ''
+    }`
   }
 
   return (
@@ -185,16 +253,16 @@ export default function PasarelaDePago({
               <div className="flex gap-2 mb-3">
                 <button 
                   className={`flex-1 py-2 px-4 rounded-lg border ${paymentMethod === 'tarjeta' 
-                    ? 'bg-gray-200 border-gray-300' 
-                    : 'bg-gray-100 border-gray-200 hover:bg-gray-50'}`}
+                    ? 'bg-[#FFA500] border-[#FFA500] text-white font-medium' 
+                    : 'bg-gray-100 border-gray-200 hover:bg-gray-50 text-gray-700'}`}
                   onClick={() => setPaymentMethod('tarjeta')}
                 >
                   Pago con tarjeta
                 </button>
                 <button 
                   className={`flex-1 py-2 px-4 rounded-lg border ${paymentMethod === 'qr' 
-                    ? 'bg-gray-200 border-gray-300' 
-                    : 'bg-gray-100 border-gray-200 hover:bg-gray-50'}`}
+                    ? 'bg-[#FFA500] border-[#FFA500] text-white font-medium' 
+                    : 'bg-gray-100 border-gray-200 hover:bg-gray-50 text-gray-700'}`}
                   onClick={() => setPaymentMethod('qr')}
                 >
                   Pago con QR
@@ -210,11 +278,17 @@ export default function PasarelaDePago({
                     <input
                       type="text"
                       placeholder="NOMBRE COMPLETO"
-                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      className={getInputClass(isCardNameValid)}
                       value={cardName}
                       onChange={handleCardNameChange}
                       maxLength={30}
                     />
+                    {showValidationErrors && !isCardNameValid && (
+                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                        <FiAlertCircle className="mr-1" /> 
+                        Ingrese un nombre válido (mínimo 5 caracteres)
+                      </p>
+                    )}
                   </div>
                   
                   <div>
@@ -224,10 +298,16 @@ export default function PasarelaDePago({
                     <input
                       type="text" 
                       placeholder="1234 1234 1234 1234"
-                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      className={getInputClass(isCardNumberValid)}
                       value={cardNumber}
                       onChange={handleCardNumberChange}
                     />
+                    {showValidationErrors && !isCardNumberValid && (
+                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                        <FiAlertCircle className="mr-1" />
+                        Ingrese un número de tarjeta válido (16 dígitos)
+                      </p>
+                    )}
                   </div>
                   
                   <div className="flex gap-4">
@@ -238,10 +318,16 @@ export default function PasarelaDePago({
                       <input
                         type="text" 
                         placeholder="MM / AA"
-                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        className={getInputClass(isExpDateValid)}
                         value={expDate}
                         onChange={handleExpDateChange}
                       />
+                      {showValidationErrors && !isExpDateValid && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <FiAlertCircle className="mr-1" />
+                          Fecha inválida o expirada (MM/AA)
+                        </p>
+                      )}
                     </div>
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -250,11 +336,17 @@ export default function PasarelaDePago({
                       <input
                         type="text" 
                         placeholder="CVC"
-                        className="w-full p-2 border border-gray-300 rounded-lg"
+                        className={getInputClass(isCvcValid)}
                         value={cvc}
                         onChange={handleCvcChange}
                         maxLength={3}
                       />
+                      {showValidationErrors && !isCvcValid && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <FiAlertCircle className="mr-1" />
+                          3 dígitos
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -262,12 +354,21 @@ export default function PasarelaDePago({
               
               {paymentMethod === 'qr' && (
                 <div className="flex justify-center py-8">
-      <Image
-        src="/qr.png" 
-        alt="Código QR"
-        width={200} // el tamaño que quieras
-        height={200}
-      />
+                  <Image
+                    src="/qr.png" 
+                    alt="Código QR"
+                    width={200}
+                    height={200}
+                  />
+                </div>
+              )}
+              
+              {showValidationErrors && !isFormValid && paymentMethod === 'tarjeta' && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-3 text-red-600 text-sm">
+                  <p className="flex items-center">
+                    <FiAlertCircle className="mr-2 text-lg" />
+                    Por favor, complete todos los campos requeridos correctamente.
+                  </p>
                 </div>
               )}
               
@@ -280,9 +381,9 @@ export default function PasarelaDePago({
                 </button>
                 <button
                   onClick={handleProcesarPago}
-                  disabled={!isFormValid}
+                  disabled={paymentMethod === 'tarjeta' && !isFormValid && showValidationErrors}
                   className={`flex-1 px-4 py-2 ${
-                    !isFormValid
+                    paymentMethod === 'tarjeta' && !isFormValid && showValidationErrors
                       ? 'bg-gray-400 cursor-not-allowed'
                       : 'bg-[#FFA500] hover:bg-[#e69500]'
                   } text-white rounded-md font-medium`}
@@ -301,7 +402,7 @@ export default function PasarelaDePago({
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmarPago}
         title="¿Está seguro que desea pagar?"
-        message={`Una vez confirmada, esta acción no se puede deshacer. ¿Desea confirmar el pago de $${rentaDetails.total} ${rentaDetails.moneda} por la renta del vehículo?`}
+        message={`Una vez confirmada, esta acción no se puede deshacer. ¿Desea confirmar el pago de ${rentaDetails.total} ${rentaDetails.moneda} por la renta del vehículo?`}
         confirmText="ACEPTAR"
         cancelText="CANCELAR"
         isProcessing={isProcessing}
