@@ -29,7 +29,6 @@ export default function ComprobanteDePago({
 }: ComprobanteDePagoProps) {
   const [isDownloading, setIsDownloading] = useState(false)
   const comprobateRef = useRef<HTMLDivElement>(null)
-  const buttonsRef = useRef<HTMLDivElement>(null)
 
   if (!isOpen) {
     return null
@@ -39,15 +38,105 @@ export default function ComprobanteDePago({
     setIsDownloading(true)
     
     try {
-      // Mensaje temporal mientras se implementa la funcionalidad de descarga
-      console.log('Funcionalidad de descarga temporalmente deshabilitada')
-      alert('La funcionalidad de descarga estará disponible pronto')
-      
-      // Aquí iría el código para generar y descargar el PDF
-      // cuando las dependencias estén correctamente instaladas
+      if (comprobateRef.current) {
+        // Crear una copia del contenido para manipularlo
+        const printContent = comprobateRef.current.cloneNode(true) as HTMLElement
+        
+        // Aplicar estilos específicos para la impresión
+        printContent.style.width = "100%"
+        printContent.style.maxWidth = "500px"
+        printContent.style.margin = "0 auto"
+        printContent.style.padding = "20px"
+        printContent.style.borderRadius = "0"
+        printContent.style.boxShadow = "none"
+        
+        // Crear un nuevo documento HTML para imprimir
+        const printWindow = window.open('', '_blank')
+        
+        if (printWindow) {
+          // Establecer el contenido del documento y estilos básicos
+          printWindow.document.open()
+          printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Comprobante de Pago - ${paymentDetails.cliente}</title>
+                <meta charset="utf-8">
+                <style>
+                  body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                  .container { max-width: 500px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 8px; padding: 15px; }
+                  h2 { color: #002D62; margin-bottom: 20px; }
+                  .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eaeaea; }
+                  .label { color: #666; }
+                  .value { font-weight: 500; }
+                  .garantia-note { background-color: #FFF8E1; border: 1px solid #FFE082; padding: 15px; border-radius: 6px; margin-top: 20px; }
+                  .garantia-badge { background-color: #FFF8E1; color: #FFA000; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: 500; display: inline-block; }
+                  @media print {
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Comprobante de Pago</h2>
+                    ${paymentDetails.isGarantia ? '<span class="garantia-badge">Garantía</span>' : ''}
+                  </div>
+                  
+                  <div class="info-row">
+                    <span class="label">Monto</span>
+                    <span class="value">${paymentDetails.monto.toFixed(2)} ${paymentDetails.moneda}</span>
+                  </div>
+                  
+                  <div class="info-row">
+                    <span class="label">Fecha de Pago</span>
+                    <span class="value">${paymentDetails.fechaPago}</span>
+                  </div>
+                  
+                  <div class="info-row">
+                    <span class="label">Método de Pago</span>
+                    <span class="value">${paymentDetails.metodoPago} •••• ${paymentDetails.ultimosDigitos}</span>
+                  </div>
+                  
+                  <div class="info-row">
+                    <span class="label">Cliente</span>
+                    <span class="value">${paymentDetails.cliente}</span>
+                  </div>
+                  
+                  <div class="info-row">
+                    <span class="label">Fecha de Liberación</span>
+                    <span class="value">${paymentDetails.fechaLiberacion}</span>
+                  </div>
+                  
+                  ${paymentDetails.isGarantia ? `
+                    <div class="garantia-note">
+                      <p style="margin: 0; font-size: 14px;">La garantía será liberada automáticamente al finalizar el periodo de renta, siempre y cuando no existan cargos adicionales.</p>
+                    </div>
+                  ` : ''}
+                </div>
+              </body>
+            </html>
+          `)
+          printWindow.document.close()
+          
+          // Dar tiempo para que se carguen los estilos
+          setTimeout(() => {
+            // Imprimir o guardar como PDF (según el navegador)
+            printWindow.print()
+            
+            // Cerrar ventana después de imprimir (algunos navegadores)
+            // La mayoría de navegadores mantendrán la ventana abierta después de guardar PDF
+            // printWindow.close()
+            
+            setIsDownloading(false)
+          }, 500)
+        } else {
+          throw new Error('No se pudo abrir la ventana de impresión')
+        }
+      }
     } catch (error) {
-      console.error('Error:', error)
-    } finally {
+      console.error('Error al generar el comprobante:', error)
+      alert('Hubo un error al generar el comprobante de pago')
       setIsDownloading(false)
     }
   }
@@ -109,7 +198,7 @@ export default function ComprobanteDePago({
         </div>
         
         {/* Botones de acción que no se incluirán en el PDF */}
-        <div ref={buttonsRef} className="px-6 pb-6">
+        <div className="px-6 pb-6">
           <div className="flex gap-3 pt-4">
             <button
               onClick={handleDownload}
