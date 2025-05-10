@@ -74,7 +74,7 @@ export default function ComprobanteDePago({
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-gray-200">
                 <span className="text-gray-600">Monto</span>
-                <span className="font-semibold text-gray-800">${paymentDetails.monto.toFixed(2)} {paymentDetails.moneda}</span>
+                <span className="font-semibold text-gray-800">{paymentDetails.monto.toFixed(2)} {paymentDetails.moneda}</span>
               </div>
               
               <div className="flex justify-between py-2 border-b border-gray-200">
