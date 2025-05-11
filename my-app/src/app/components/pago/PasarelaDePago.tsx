@@ -363,10 +363,7 @@ export default function PasarelaDePago({
 
                   <div className="flex justify-between py-2 border-b border-gray-200">
                     <span>Coste de renta:</span>
-                    <span>
-                      {rentaDetails.precio} Bs × {rentaDetails.dias} días ={" "}
-                      {rentaDetails.precio * rentaDetails.dias} Bs
-                    </span>
+                    <span>{rentaDetails.precio * rentaDetails.dias} Bs</span>
                   </div>
 
                   <div className="flex justify-between py-2 border-b border-gray-200">
