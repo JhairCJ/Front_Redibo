@@ -276,17 +276,17 @@ export default function PasarelaDePago({
     // Finalizar el proceso completo
     setShowGarantiaConfirmModal(false);
     setShowSuccessModal(true);
+      // Preparar detalles para el comprobante de renta
+  setPagoRentaDetails(prepararDetallesPago("renta"));
+  // Preparar detalles para el comprobante de garantía
+  setPagoGarantiaDetails(prepararDetallesPago("garantia"));
+
+
     setIsProcessing(false);
   };
 
   const handleFinalizarPago = () => {
     setShowSuccessModal(false);
-
-    // Preparar detalles para el comprobante de renta
-    setPagoRentaDetails(prepararDetallesPago("renta"));
-    // Preparar detalles para el comprobante de garantía
-    setPagoGarantiaDetails(prepararDetallesPago("garantia"));
-
     // Mostrar primero el comprobante de renta
     setShowComprobanteRenta(true);
   };
@@ -295,7 +295,9 @@ export default function PasarelaDePago({
     !isOpen &&
     !showRentaConfirmModal &&
     !showGarantiaConfirmModal &&
-    !showSuccessModal
+    !showSuccessModal &&
+    !showComprobanteRenta &&
+    !showComprobanteGarantia
   ) {
     return null;
   }
