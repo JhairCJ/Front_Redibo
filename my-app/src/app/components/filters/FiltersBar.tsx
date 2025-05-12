@@ -11,8 +11,8 @@ const FiltersBar: React.FC<FiltersBarProps> = ({ activeFilter, onFilterChange })
   const botones = [
     { id: 'solicitudes', label: 'Solicitudes pendientes' },
     { id: 'rentados', label: 'En renta' },
-    { id: 'disponibles', label: 'Disponibles' }
-    { id: 'todos', label: 'Todos' },
+    { id: 'disponibles', label: 'Disponibles' },
+    { id: 'todos', label: 'Todos' }
   ];
 
   return (
