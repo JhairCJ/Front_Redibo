@@ -52,11 +52,15 @@ export default function GestionarVehiculos() {
   const [mostrarExito, setMostrarExito] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [mostrarModalMantenimiento, setMostrarModalMantenimiento] = useState(false);
+  // Nueva estado para el modal de confirmación de mantenimiento
+  const [mostrarConfirmacionMantenimiento, setMostrarConfirmacionMantenimiento] = useState(false);
   const [vehiculoSeleccionado, setVehiculoSeleccionado] = useState<number | null>(null);
   const [mantenimientoExitoso, setMantenimientoExitoso] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [accionActual, setAccionActual] = useState("");
+  // Estado para almacenar los datos del formulario temporalmente
+  const [datosMantenimientoTemp, setDatosMantenimientoTemp] = useState<MantenimientoData | null>(null);
   const [formData, setFormData] = useState({
     fechaInicio: "",
     fechaFin: "",
@@ -188,19 +192,26 @@ export default function GestionarVehiculos() {
     return isNaN(fecha.getTime()) ? null : fecha.toISOString();
   };
   
+  // Función para preparar datos de mantenimiento y mostrar confirmación
+  const handlePreRegistrarMantenimiento = (data: MantenimientoData) => {
+    setDatosMantenimientoTemp(data);
+    setMostrarModalMantenimiento(false);
+    setMostrarConfirmacionMantenimiento(true);
+  };
   
-  
-  const handleRegistrarMantenimiento = async (data: MantenimientoData) => {
-    if (!vehiculoSeleccionado) return;
+  // Función para confirmar y registrar el mantenimiento
+  const confirmarRegistroMantenimiento = async () => {
+    if (!datosMantenimientoTemp || !vehiculoSeleccionado) return;
     
     setIsProcessing(true);
     
     try {
+      const data = datosMantenimientoTemp;
       console.log("Datos de mantenimiento:", data);
       const fechaInicio = parseFechaInicio(data.fechaInicio);
       const fechaFin = parseFechaFin(data.fechaFin);
       const kilometraje = Number(data.kilometraje);
-      console.log("Kilometraje:", kilometraje);
+      
       const response = await fetch(`${API_URL}/autos/${vehiculoSeleccionado}/mantenimiento`, {
         method: 'POST',
         headers: {
@@ -215,11 +226,13 @@ export default function GestionarVehiculos() {
           fechaFin: fechaFin
         })
       });
+      
       if (!response.ok) {
         throw new Error(`Error al registrar mantenimiento: ${response.status}`);
       }
-      data= await response.json();
-      console.log("Respuesta del servidor:", data);
+      
+      const responseData = await response.json();
+      console.log("Respuesta del servidor:", responseData);
       await cargarVehiculos();
       setMantenimientoExitoso(true);
     } catch (err) {
@@ -227,8 +240,9 @@ export default function GestionarVehiculos() {
       setError("No se pudo registrar el mantenimiento. Por favor, intente nuevamente.");
     } finally {
       setIsProcessing(false);
-      setMostrarModalMantenimiento(false);
+      setMostrarConfirmacionMantenimiento(false);
       setVehiculoSeleccionado(null);
+      setDatosMantenimientoTemp(null);
     }
   };
 
@@ -502,11 +516,33 @@ export default function GestionarVehiculos() {
         successIcon={<FiCheckCircle className="text-5xl text-[#FFA500]" />}
       />
 
-      {/* Modal de registro de mantenimiento */}
+      {/* Nuevo Modal de confirmación de datos de mantenimiento */}
+      <ModalDeConfirmacion
+        isOpen={mostrarConfirmacionMantenimiento}
+        onClose={() => setMostrarConfirmacionMantenimiento(false)}
+        onConfirm={confirmarRegistroMantenimiento}
+        title="¿Confirma los datos del mantenimiento?"
+        message={
+          datosMantenimientoTemp ? 
+          `Tipo: ${datosMantenimientoTemp.tipoMantenimiento}
+           Fecha inicio: ${datosMantenimientoTemp.fechaInicio}
+           Fecha fin: ${datosMantenimientoTemp.fechaFin}
+           Costo: $${datosMantenimientoTemp.costo}
+           Descripción: ${datosMantenimientoTemp.descripcion}` : 
+          "¿Está seguro de registrar este mantenimiento?"
+        }
+        confirmText="CONFIRMAR"
+        cancelText="CANCELAR"
+        isProcessing={isProcessing}
+        variant="confirmation"
+        showSuccess={false}
+      />
+
+      {/* Modal de registro de mantenimiento - cambiado el onSubmit */}
       <RegistrarMantenimientoModal
         isOpen={mostrarModalMantenimiento}
         onClose={() => setMostrarModalMantenimiento(false)}
-        onSubmit={handleRegistrarMantenimiento}
+        onSubmit={handlePreRegistrarMantenimiento}
         formData={formData}
         setFormData={setFormData}
         onCancel={() => setMostrarModalMantenimiento(false)}
