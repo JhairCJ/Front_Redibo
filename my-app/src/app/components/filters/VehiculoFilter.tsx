@@ -5,10 +5,10 @@ import React, { useState, useEffect, useRef } from 'react';
 interface Props {
   search: string;
   setSearch: (value: string) => void;
-  estadoFilter: string; // Nuevo prop
-  setEstadoFilter?: (value: string) => void;
-  ordenamiento: string; // Nuevo prop  
-  setOrdenamiento?: (value: string) => void;
+  estadoFilter: string;
+  setEstadoFilter: (value: string) => void;
+  ordenamiento: string;
+  setOrdenamiento: (value: string) => void;
 }
 
 const ordenOptions = [
@@ -27,205 +27,252 @@ const estadoOptions = [
   'No disponible',
 ];
 
-const VehiculoFilter = ({
+const VehiculoFilter: React.FC<Props> = ({
   search,
   setSearch,
-  estadoFilter, // Usar el valor del padre
+  estadoFilter,
   setEstadoFilter,
-  ordenamiento, // Usar el valor del padre
+  ordenamiento,
   setOrdenamiento,
-}: Props) => {
-  const [showEstado, setShowEstado] = useState(false);
-  const [showOrden, setShowOrden] = useState(false);
+}) => {
+  const [dropdownEstadoOpen, setDropdownEstadoOpen] = useState(false);
+  const [dropdownOrdenOpen, setDropdownOrdenOpen] = useState(false);
+  
+  const estadoDropdownRef = useRef<HTMLDivElement>(null);
+  const ordenDropdownRef = useRef<HTMLDivElement>(null);
 
-  const estadoRef = useRef<HTMLDivElement>(null);
-  const ordenRef = useRef<HTMLDivElement>(null);
-
+  // Cerrar dropdowns al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (estadoRef.current && !estadoRef.current.contains(event.target as Node)) {
-        setShowEstado(false);
+      if (estadoDropdownRef.current && !estadoDropdownRef.current.contains(event.target as Node)) {
+        setDropdownEstadoOpen(false);
       }
-      if (ordenRef.current && !ordenRef.current.contains(event.target as Node)) {
-        setShowOrden(false);
+      if (ordenDropdownRef.current && !ordenDropdownRef.current.contains(event.target as Node)) {
+        setDropdownOrdenOpen(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
-  const toggleEstado = () => {
-    setShowEstado((prev) => !prev);
-    setShowOrden(false);
+  // Manejar selección de estado
+  const handleEstadoSelect = (estado: string) => {
+    setEstadoFilter(estado);
+    setDropdownEstadoOpen(false);
   };
 
-  const toggleOrden = () => {
-    setShowOrden((prev) => !prev);
-    setShowEstado(false);
+  // Manejar selección de ordenamiento
+  const handleOrdenSelect = (orden: string) => {
+    setOrdenamiento(orden);
+    setDropdownOrdenOpen(false);
   };
 
-  const handleEstadoSelect = (value: string) => {
-    setEstadoFilter?.(value);
-    setShowEstado(false);
+  // Toggle dropdown estado
+  const toggleEstadoDropdown = () => {
+    setDropdownEstadoOpen(!dropdownEstadoOpen);
+    setDropdownOrdenOpen(false); // Cerrar el otro dropdown
   };
 
-  const handleOrdenSelect = (value: string) => {
-    setOrdenamiento?.(value);
-    setShowOrden(false);
+  // Toggle dropdown ordenamiento
+  const toggleOrdenDropdown = () => {
+    setDropdownOrdenOpen(!dropdownOrdenOpen);
+    setDropdownEstadoOpen(false); // Cerrar el otro dropdown
   };
 
   return (
-    <div className="w-full relative z-10 mb-6">
-      {/* para pantallas grandes */}
-      <div className="hidden md:flex md:items-center md:justify-between gap-4 w-full">
-        <div className="flex gap-4">
+    <div className="w-full mb-6">
+      {/* Versión Desktop */}
+      <div className="hidden lg:flex lg:items-center lg:justify-between gap-4">
+        {/* Barra de búsqueda */}
+        <div className="flex-1 max-w-md">
           <input
             type="text"
             placeholder="Buscar por nombre o placa"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md w-64 focus:outline-none focus:ring-2 focus:ring-[#FFA726] focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFA726] focus:border-transparent transition-all duration-200"
           />
-          <div className="relative w-56" ref={estadoRef}>
-            <button
-              onClick={toggleEstado}
-              className="bg-[#FFA726] text-white px-4 py-2 border border-[#FFA726] rounded-md w-full flex justify-between items-center hover:bg-[#FF9800] transition-colors"
-              aria-haspopup="listbox"
-              aria-expanded={showEstado}
-            >
-              {estadoFilter} <span className="ml-2 text-black">▼</span>
-            </button>
-            {showEstado && (
-              <ul className="absolute top-full mt-1 w-full border border-gray-300 bg-white rounded-md shadow-lg z-20" role="listbox">
-                {estadoOptions.map((option) => (
-                  <li
-                    key={option}
-                    onClick={() => handleEstadoSelect(option)}
-                    className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                      option === estadoFilter ? 'bg-[#FFA726] text-white' : 'text-black'
-                    }`}
-                  >
-                    {option}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
         </div>
 
-        <div className="relative w-56" ref={ordenRef}>
-          <button
-            onClick={toggleOrden}
-            className="bg-[#FFA726] text-white px-4 py-2 border border-[#FFA726] rounded-md w-full flex justify-between items-center hover:bg-[#FF9800] transition-colors"
-            aria-haspopup="listbox"
-            aria-expanded={showOrden}
-          >
-            {ordenamiento} <span className="ml-2 text-black">▼</span>
-          </button>
-          {showOrden && (
-            <ul className="absolute top-full mt-1 w-full border border-gray-300 bg-white rounded-md shadow-lg z-20" role="listbox">
-              {ordenOptions.map((option) => (
-                <li
-                  key={option}
-                  onClick={() => handleOrdenSelect(option)}
-                  className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                    option === ordenamiento ? 'bg-[#FFA726] text-white' : 'text-black'
-                  }`}
-                >
-                  {option}
-                </li>
-              ))}
-            </ul>
-          )}
+        {/* Filtros */}
+        <div className="flex gap-3">
+          {/* Dropdown Estado */}
+          <div className="relative" ref={estadoDropdownRef}>
+            <button
+              type="button"
+              onClick={toggleEstadoDropdown}
+              className="bg-[#FFA726] hover:bg-[#FF9800] text-white px-4 py-2 rounded-lg flex items-center justify-between min-w-[180px] transition-colors duration-200"
+            >
+              <span className="truncate">{estadoFilter}</span>
+              <svg
+                className={`w-4 h-4 ml-2 transition-transform duration-200 ${
+                  dropdownEstadoOpen ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {dropdownEstadoOpen && (
+              <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                {estadoOptions.map((estado) => (
+                  <button
+                    key={estado}
+                    type="button"
+                    onClick={() => handleEstadoSelect(estado)}
+                    className={`w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg ${
+                      estado === estadoFilter
+                        ? 'bg-[#FFA726] text-white hover:bg-[#FF9800]'
+                        : 'text-gray-700'
+                    }`}
+                  >
+                    {estado}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Dropdown Ordenamiento */}
+          <div className="relative" ref={ordenDropdownRef}>
+            <button
+              type="button"
+              onClick={toggleOrdenDropdown}
+              className="bg-[#FFA726] hover:bg-[#FF9800] text-white px-4 py-2 rounded-lg flex items-center justify-between min-w-[180px] transition-colors duration-200"
+            >
+              <span className="truncate">{ordenamiento}</span>
+              <svg
+                className={`w-4 h-4 ml-2 transition-transform duration-200 ${
+                  dropdownOrdenOpen ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {dropdownOrdenOpen && (
+              <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                {ordenOptions.map((orden) => (
+                  <button
+                    key={orden}
+                    type="button"
+                    onClick={() => handleOrdenSelect(orden)}
+                    className={`w-full px-4 py-2 text-left hover:bg-gray-50 transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg ${
+                      orden === ordenamiento
+                        ? 'bg-[#FFA726] text-white hover:bg-[#FF9800]'
+                        : 'text-gray-700'
+                    }`}
+                  >
+                    {orden}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* para móviles */}
-      <div className="flex flex-col gap-4 md:hidden">
-        <input
-          type="text"
-          placeholder="Buscar por nombre o placa"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#FFA726] focus:border-transparent"
-        />
+      {/* Versión Mobile/Tablet */}
+      <div className="lg:hidden space-y-4">
+        {/* Barra de búsqueda */}
+        <div>
+          <input
+            type="text"
+            placeholder="Buscar por nombre o placa"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFA726] focus:border-transparent transition-all duration-200"
+          />
+        </div>
 
-        <div className="flex gap-2">
-          <div className="relative flex-1" ref={estadoRef}>
+        {/* Filtros en fila */}
+        <div className="flex gap-3">
+          {/* Dropdown Estado */}
+          <div className="relative flex-1" ref={estadoDropdownRef}>
             <button
-              onClick={toggleEstado}
-              className="bg-[#FFA726] text-white px-3 py-2 border border-[#FFA726] rounded-md w-full flex justify-between items-center text-sm hover:bg-[#FF9800] transition-colors"
-              aria-haspopup="listbox"
-              aria-expanded={showEstado}
+              type="button"
+              onClick={toggleEstadoDropdown}
+              className="w-full bg-[#FFA726] hover:bg-[#FF9800] text-white px-3 py-2 rounded-lg flex items-center justify-between text-sm transition-colors duration-200"
             >
               <span className="truncate">{estadoFilter}</span>
-              <span className="ml-2 text-black flex-shrink-0">▼</span>
-            </button>
-            {showEstado && (
-              <ul
-                className="absolute top-full mt-1 w-full border border-gray-300 bg-white rounded-md shadow-lg z-20 max-h-48 overflow-y-auto"
-                role="listbox"
-                tabIndex={-1}
+              <svg
+                className={`w-4 h-4 ml-2 flex-shrink-0 transition-transform duration-200 ${
+                  dropdownEstadoOpen ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {estadoOptions.map((option) => (
-                  <li
-                    key={option}
-                    onClick={() => handleEstadoSelect(option)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        handleEstadoSelect(option);
-                      }
-                    }}
-                    role="option"
-                    aria-selected={option === estadoFilter}
-                    tabIndex={0}
-                    className={`px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
-                      option === estadoFilter ? 'bg-[#FFA726] text-white' : 'text-black'
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {dropdownEstadoOpen && (
+              <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                {estadoOptions.map((estado) => (
+                  <button
+                    key={estado}
+                    type="button"
+                    onClick={() => handleEstadoSelect(estado)}
+                    className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg ${
+                      estado === estadoFilter
+                        ? 'bg-[#FFA726] text-white hover:bg-[#FF9800]'
+                        : 'text-gray-700'
                     }`}
                   >
-                    {option}
-                  </li>
+                    {estado}
+                  </button>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
 
-          <div className="relative flex-1" ref={ordenRef}>
+          {/* Dropdown Ordenamiento */}
+          <div className="relative flex-1" ref={ordenDropdownRef}>
             <button
-              onClick={toggleOrden}
-              className="bg-[#FFA726] text-white px-3 py-2 border border-[#FFA726] rounded-md w-full flex justify-between items-center text-sm hover:bg-[#FF9800] transition-colors"
-              aria-haspopup="listbox"
-              aria-expanded={showOrden}
+              type="button"
+              onClick={toggleOrdenDropdown}
+              className="w-full bg-[#FFA726] hover:bg-[#FF9800] text-white px-3 py-2 rounded-lg flex items-center justify-between text-sm transition-colors duration-200"
             >
               <span className="truncate">{ordenamiento}</span>
-              <span className="ml-2 text-black flex-shrink-0">▼</span>
-            </button>
-            {showOrden && (
-              <ul
-                className="absolute top-full mt-1 w-full border border-gray-300 bg-white rounded-md shadow-lg z-20 max-h-48 overflow-y-auto"
-                role="listbox"
-                tabIndex={-1}
+              <svg
+                className={`w-4 h-4 ml-2 flex-shrink-0 transition-transform duration-200 ${
+                  dropdownOrdenOpen ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                {ordenOptions.map((option) => (
-                  <li
-                    key={option}
-                    onClick={() => handleOrdenSelect(option)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        handleOrdenSelect(option);
-                      }
-                    }}
-                    role="option"
-                    aria-selected={option === ordenamiento}
-                    tabIndex={0}
-                    className={`px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
-                      option === ordenamiento ? 'bg-[#FFA726] text-white' : 'text-black'
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {dropdownOrdenOpen && (
+              <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                {ordenOptions.map((orden) => (
+                  <button
+                    key={orden}
+                    type="button"
+                    onClick={() => handleOrdenSelect(orden)}
+                    className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg ${
+                      orden === ordenamiento
+                        ? 'bg-[#FFA726] text-white hover:bg-[#FF9800]'
+                        : 'text-gray-700'
                     }`}
                   >
-                    {option}
-                  </li>
+                    {orden}
+                  </button>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
         </div>
