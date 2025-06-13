@@ -130,19 +130,21 @@ export default function GestionarVehiculos() {
 
     return (
       <div className="flex items-center mt-2">
-        <div className="flex mr-1 text-yellow-400">
-          {[...Array(5)].map((_, i) =>
-            i < Math.round(vehiculo.promedioCalificacion!)
-              ? <AiFillStar key={i} />
-              : <AiOutlineStar key={i} />
-          )}
+        <div className="bg-white text-black px-3 py-1 rounded-full flex items-center gap-1 w-fit shadow-sm border border-gray-200">
+          <div className="flex text-yellow-400">
+            {[...Array(5)].map((_, i) =>
+              i < Math.round(vehiculo.promedioCalificacion!)
+                ? <AiFillStar key={i} size={14} />
+                : <AiOutlineStar key={i} size={14} />
+            )}
+          </div>
+          <span className="text-sm font-medium text-gray-700 ml-1">
+            {vehiculo.promedioCalificacion.toFixed(1)}
+            {vehiculo.totalComentarios && (
+              <span className="text-gray-500"> ({vehiculo.totalComentarios})</span>
+            )}
+          </span>
         </div>
-        <span className="text-sm font-medium text-gray-700 ml-1">
-          {vehiculo.promedioCalificacion.toFixed(1)}
-          {vehiculo.totalComentarios && (
-            <span className="text-gray-500"> ({vehiculo.totalComentarios})</span>
-          )}
-        </span>
       </div>
     );
   };
