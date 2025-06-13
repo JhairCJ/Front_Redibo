@@ -5,7 +5,9 @@ import React, { useState, useEffect, useRef } from 'react';
 interface Props {
   search: string;
   setSearch: (value: string) => void;
+  estadoFilter: string; // Nuevo prop
   setEstadoFilter?: (value: string) => void;
+  ordenamiento: string; // Nuevo prop  
   setOrdenamiento?: (value: string) => void;
 }
 
@@ -28,11 +30,11 @@ const estadoOptions = [
 const VehiculoFilter = ({
   search,
   setSearch,
+  estadoFilter, // Usar el valor del padre
   setEstadoFilter,
+  ordenamiento, // Usar el valor del padre
   setOrdenamiento,
 }: Props) => {
-  const [estado, setEstado] = useState('Todos los estados');
-  const [orden, setOrden] = useState('Más antiguos');
   const [showEstado, setShowEstado] = useState(false);
   const [showOrden, setShowOrden] = useState(false);
 
@@ -63,13 +65,11 @@ const VehiculoFilter = ({
   };
 
   const handleEstadoSelect = (value: string) => {
-    setEstado(value);
     setEstadoFilter?.(value);
     setShowEstado(false);
   };
 
   const handleOrdenSelect = (value: string) => {
-    setOrden(value);
     setOrdenamiento?.(value);
     setShowOrden(false);
   };
@@ -93,7 +93,7 @@ const VehiculoFilter = ({
               aria-haspopup="listbox"
               aria-expanded={showEstado}
             >
-              {estado} <span className="ml-2 text-black">▼</span>
+              {estadoFilter} <span className="ml-2 text-black">▼</span>
             </button>
             {showEstado && (
               <ul className="absolute top-full mt-1 w-full border border-gray-300 bg-white rounded-md shadow-lg z-20" role="listbox">
@@ -102,7 +102,7 @@ const VehiculoFilter = ({
                     key={option}
                     onClick={() => handleEstadoSelect(option)}
                     className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                      option === estado ? 'bg-[#FFA726] text-white' : 'text-black'
+                      option === estadoFilter ? 'bg-[#FFA726] text-white' : 'text-black'
                     }`}
                   >
                     {option}
@@ -120,7 +120,7 @@ const VehiculoFilter = ({
             aria-haspopup="listbox"
             aria-expanded={showOrden}
           >
-            {orden} <span className="ml-2 text-black">▼</span>
+            {ordenamiento} <span className="ml-2 text-black">▼</span>
           </button>
           {showOrden && (
             <ul className="absolute top-full mt-1 w-full border border-gray-300 bg-white rounded-md shadow-lg z-20" role="listbox">
@@ -129,7 +129,7 @@ const VehiculoFilter = ({
                   key={option}
                   onClick={() => handleOrdenSelect(option)}
                   className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                    option === orden ? 'bg-[#FFA726] text-white' : 'text-black'
+                    option === ordenamiento ? 'bg-[#FFA726] text-white' : 'text-black'
                   }`}
                 >
                   {option}
@@ -158,7 +158,7 @@ const VehiculoFilter = ({
               aria-haspopup="listbox"
               aria-expanded={showEstado}
             >
-              <span className="truncate">{estado}</span>
+              <span className="truncate">{estadoFilter}</span>
               <span className="ml-2 text-black flex-shrink-0">▼</span>
             </button>
             {showEstado && (
@@ -177,10 +177,10 @@ const VehiculoFilter = ({
                       }
                     }}
                     role="option"
-                    aria-selected={option === estado}
+                    aria-selected={option === estadoFilter}
                     tabIndex={0}
                     className={`px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
-                      option === estado ? 'bg-[#FFA726] text-white' : 'text-black'
+                      option === estadoFilter ? 'bg-[#FFA726] text-white' : 'text-black'
                     }`}
                   >
                     {option}
@@ -197,7 +197,7 @@ const VehiculoFilter = ({
               aria-haspopup="listbox"
               aria-expanded={showOrden}
             >
-              <span className="truncate">{orden}</span>
+              <span className="truncate">{ordenamiento}</span>
               <span className="ml-2 text-black flex-shrink-0">▼</span>
             </button>
             {showOrden && (
@@ -216,10 +216,10 @@ const VehiculoFilter = ({
                       }
                     }}
                     role="option"
-                    aria-selected={option === orden}
+                    aria-selected={option === ordenamiento}
                     tabIndex={0}
                     className={`px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm ${
-                      option === orden ? 'bg-[#FFA726] text-white' : 'text-black'
+                      option === ordenamiento ? 'bg-[#FFA726] text-white' : 'text-black'
                     }`}
                   >
                     {option}

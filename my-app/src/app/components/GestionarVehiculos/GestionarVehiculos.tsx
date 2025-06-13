@@ -681,7 +681,9 @@ export default function GestionarVehiculos() {
       <VehiculoFilter
         search={search}
         setSearch={setSearch}
+        estadoFilter={estadoFilter}        // Pasar el valor actual
         setEstadoFilter={setEstadoFilter}
+        ordenamiento={ordenamiento}        // Pasar el valor actual
         setOrdenamiento={setOrdenamiento}
       />
 
