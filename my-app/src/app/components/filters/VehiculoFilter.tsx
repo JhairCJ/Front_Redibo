@@ -90,8 +90,8 @@ const VehiculoFilter = ({
     <>
       {/* Overlay oscuro */}
       {(showEstado || showOrden) && (
-        <div
-          className="fixed inset-0 bg-black/60 z-40"
+        <div 
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 overflow-y-auto"
           onClick={closeAllDropdowns}
         />
       )}
